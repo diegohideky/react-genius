@@ -17,7 +17,8 @@ let defaultState = {
   turn: 0,
   attempt: 0,
   history: [],
-  started: false
+  started: false,
+  isAttempt: false,
 }
 
 class App extends Component {
@@ -54,6 +55,10 @@ class App extends Component {
     if (this.state.isAttempt) {
       e.preventDefault();
 
+      this.setState({
+        isAttempt: false
+      });
+
       let id = parseInt(e.target.id, 10);
       let turn = this.state.turn;
       let attempt = this.state.attempt;
@@ -65,7 +70,7 @@ class App extends Component {
       if (attempt === turn && image.id === id) {
         this.setState(prevState => ({
           turn: prevState.turn + 1,
-          isAttempt: !prevState.isAttempt,
+          isAttempt: false,
           attempt: 0
         }));
 
@@ -73,7 +78,8 @@ class App extends Component {
 
       } else if (image.id === id) {
         this.setState(prevState => ({
-          attempt: prevState.attempt + 1
+          attempt: prevState.attempt + 1,
+          isAttempt: true
         }));
       } else {
         this.restart();
@@ -82,7 +88,7 @@ class App extends Component {
   }
 
   async delay() {
-    return new Promise(r => setTimeout(r, 800));
+    return new Promise(r => setTimeout(r, 500));
   }
 
   async blink(turn) {
@@ -150,15 +156,20 @@ class App extends Component {
                 onClick={this.handleClick}/>
             )
           }
-
-          <h1 className="App-title">Can you remember the sequence?</h1>
         </header>
 
-        <hr />
+        <h1 className="App-title">
+          {
+            this.state.started
+            ? `Points: ${this.state.turn}`
+            : `Can you remember the sequence?.`
+          }
+        </h1>
 
         <p className="App-intro">
           To get started, click on the button bellow
         </p>
+
         <p>
           <button
             className="btn btn-primary"
